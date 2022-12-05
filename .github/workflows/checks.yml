@@ -21,5 +21,7 @@ jobs:
         with:
           workload_identity_provider: projects/1097836308413/locations/global/workloadIdentityPools/gh-pool/providers/github-provider
           service_account: smg-exercise-big-query@fastapi-320118.iam.gserviceaccount.com
+          create_credentials_file: true
+          export_environment_variables: true
       - name: Test
         run: docker-compose run --rm app sh -c "pytest"
