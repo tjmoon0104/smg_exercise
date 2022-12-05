@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 
 from main import app
+from service import get_max_id_from_storage
 
 client = TestClient(app)
 
@@ -12,8 +13,8 @@ def test_get_sentences_sentence_id():
     assert response.status_code == 200
     assert response.json() == {
         "id": 1,
-        "text": "Text sample",
-        "cyphered_text": "Grkg fnzcyr"
+        "text": "Texas",
+        "cyphered_text": "Grknf"
     }
 
 
@@ -34,13 +35,14 @@ def test_sentence_not_exist():
 # POST Request Tests
 def test_post_sentences_():
     """Add a new sentence to the store"""
+    test_id = get_max_id_from_storage() + 1
     response = client.post(
         "/sentences/",
-        json={"id": 99999999, "text": "super movie title"},
+        json={"id": test_id, "text": "super movie title"},
     )
     assert response.status_code == 200
     assert response.json() == {
-        "id": 99999999,
+        "id": test_id,
         "text": "super movie title",
         "cyphered_text": "fhcre zbivr gvgyr"
     }

@@ -16,3 +16,6 @@ venv/
 
 # PyCharm
 .idea/
+
+# Google Service Account
+app/credentials.json

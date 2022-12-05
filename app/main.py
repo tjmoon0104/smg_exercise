@@ -4,6 +4,7 @@ from fastapi.exceptions import RequestValidationError
 from starlette.responses import JSONResponse
 
 from models import Sentence, SentenceWithCypher
+from service import search_sentence_from_storage, insert_sentence_to_storage
 
 app = FastAPI(
     title='SMG GM Data Team - Data Engineer Python API Exercise',
@@ -81,9 +82,12 @@ def get_sentences_sentence_id(sentence_id: int = Path(
     """
     Get a sentence and its encrypted version
     """
-    if sentence_id not in sentence_dict:
+    result = search_sentence_from_storage(sentence_id)
+    if result.total_rows == 0:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sentence not found")
-    return SentenceWithCypher(**sentence_dict[sentence_id])
+    # Get first row
+    first_row = next(result)
+    return SentenceWithCypher(**first_row)
 
 
 @app.post('/sentences/', response_model=SentenceWithCypher, status_code=status.HTTP_200_OK)
@@ -91,10 +95,13 @@ def post_sentences_(body: Sentence):
     """
     Add a new sentence to the store
     """
-    if body.id in sentence_dict:
+    search_result = search_sentence_from_storage(body.id)
+    if search_result.total_rows != 0:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Sentence ID exists")
     else:
-        sentence_dict.update({
-            body.id: {"id": body.id, "text": body.text}
-        })
+        try:
+            insert_sentence_to_storage(body)
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail="Something happened with the Storage server")
     return body
