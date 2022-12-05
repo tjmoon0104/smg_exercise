@@ -15,7 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Lint
-        run: docker-compose run --rm app sh -c "flake8"
+        run: docker-compose -f docker-compose-github.yml run --rm app sh -c "flake8"
       - name: Google Auth
         uses: google-github-actions/auth@v1
         with:
@@ -24,4 +24,4 @@ jobs:
           create_credentials_file: true
           export_environment_variables: true
       - name: Test
-        run: docker-compose run --rm app sh -c "pytest"
+        run: docker-compose -f docker-compose-github.yml run --rm app sh -c "pytest"
