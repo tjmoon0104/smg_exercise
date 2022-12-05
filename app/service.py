@@ -2,7 +2,7 @@ from google.cloud import bigquery
 
 from models import Sentence
 
-client = bigquery.Client()
+client = bigquery.Client(project='fastapi-320118')
 
 
 def search_sentence_from_storage(sentence_id):

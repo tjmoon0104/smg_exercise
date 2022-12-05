@@ -7,15 +7,65 @@ jobs:
   test-lint:
     name: Test and Lint
     runs-on: ubuntu-20.04
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
       - name: Lint
-        run: docker-compose run --rm app sh -c "flake8"
+        run: docker-compose -f docker-compose-github.yml run --rm app sh -c "flake8"
+
       - name: Google Auth
         uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: projects/1097836308413/locations/global/workloadIdentityPools/gh-pool/providers/github-provider
           service_account: smg-exercise-big-query@fastapi-320118.iam.gserviceaccount.com
+          create_credentials_file: true
+          export_environment_variables: true
+
       - name: Test
-        run: docker-compose run --rm app sh -c "pytest"
+        run: docker-compose -f docker-compose-github.yml run --rm app sh -c "pytest"
+
+  build-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    needs: [ test-lint ]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Google Auth
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: projects/1097836308413/locations/global/workloadIdentityPools/gh-pool/providers/github-provider
+          service_account: smg-exercise-big-query@fastapi-320118.iam.gserviceaccount.com
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker --quiet
+
+      - name: Build Docker image
+        run: docker build . -t gcr.io/fastapi-320118/smg_exercise
+
+      - name: Push Docker image
+        run: docker push gcr.io/fastapi-320118/smg_exercise
+
+      - name: Deploy Docker image
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v1
+        with:
+          service: smg-exercise
+          image: gcr.io/fastapi-320118/smg_exercise
+          region: europe-west6
+
+      - name: Use output
+        run: curl "${{ steps.deploy.outputs.url }}"
