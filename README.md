@@ -2,6 +2,8 @@
 
 Python API Exercise
 
+[![Checks](https://github.com/tjmoon0104/smg_exercise/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/tjmoon0104/smg_exercise/actions/workflows/checks.yml)
+
 ## Description
 
 This is a simple REST API containing two endpoints. This API allows you to get a sentence with the encrypted version of
