@@ -49,9 +49,9 @@ Federation. ([Link](https://cloud.google.com/blog/products/identity-security/ena
 
 Separate docker-compose-github.yml is used for Github actions CI/CD.
 
-```
-command to run if program contains helper info
-```
+[![Checks](https://github.com/tjmoon0104/smg_exercise/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/tjmoon0104/smg_exercise/actions/workflows/checks.yml)
+
+Check workflows for detail
 
 ## Deployed URL to Cloud Run
 
