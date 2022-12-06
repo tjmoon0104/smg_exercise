@@ -15,33 +15,6 @@ app = FastAPI(
     version='1.0.0',
 )
 
-sentence_dict = {
-    1: {
-        "id": 1,
-        "text": "Text sample"
-    },
-    2: {
-        "id": 2,
-        "text": "Hello world"
-    },
-    3: {
-        "id": "3",
-        "text": "ID is string"
-    },
-    4: {
-        "id": 4,
-        "text": 1234
-    },
-    5: {
-        "id": None,
-        "text": "ID is null"
-    },
-    6: {
-        "id": 6,
-        "text": None
-    },
-}
-
 
 # Override 422 RequestValidationError to 400 and 405
 @app.exception_handler(RequestValidationError)
